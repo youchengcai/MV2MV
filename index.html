@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <title>Online Scene CAD Recomposition via Autonomous Scanning</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script type="text/javascript">
+    google.load("jquery", "1.3.2");
+  </script>
+  <style type="text/css">
+    body {
+      font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+      font-weight: 300;
+      font-size: 18px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 1100px;
+    }
+
+    h1 {
+      font-weight: 300;
+    }
+
+    a:link {
+      text-decoration: none;
+      color: 6464FF
+    }
+
+    a:active {
+      text-decoration: blink
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: 6464FF
+    }
+
+    a:visited {
+      text-decoration: none;
+      color: 551A8B
+    }
+  </style>
+
+
+  <!--------------------------------------------------------------------------------------------------->
+  <!--                                       Header and Photo                                       --->
+  <!--------------------------------------------------------------------------------------------------->
+
+<body data-gr-c-s-loaded="true">
+  <font size="3">
+    <blockquote>
+      <p>
+      </p>
+      <center>
+        <table border="0">
+          <tbody>
+            <tr>
+              <td width="30"></td>
+              <td width="1200">
+                <center>
+
+                  <!--Header-->
+                  <br><br><br>
+                  <h1><span style="font-size: 25pt">MV2MV: Multi-View Image Translation via View-Consistent Diffusion Models</span></h1>
+                  <br>
+
+                  <p class="authors">
+                    <span style="font-size: 15pt">
+                      Youcheng Cai</a><sup>1</sup>&nbsp&nbsp
+                      Runshi Li</a><sup>1</sup>&nbsp&nbsp
+                      <a href="http://staff.ustc.edu.cn/~lgliu/">Ligang Liu</a><sup>1</sup> &nbsp
+
+                      <br><br>
+                      <sup>1</sup> <a href="http://en.ustc.edu.cn/">University of Science and Technology of China</a>
+                      &nbsp&nbsp&nbsp
+
+                      <br><br>
+                      <h3 class=""><span style="font-weight: normal;"><a href="https://asia.siggraph.org/2024/">SIGGRAPH
+                            Asia 2024</a>, technical paper</span></h3>
+                    </span>
+                  <p class="authors">&nbsp;</p>
+                </center>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </center>
+      <p></p>
+
+
+      <!-- Figure 1: Overview-->
+      <br>
+      <div align="center">
+        <img src="./images/fig1.jpg" width="880" alt="Figure 1">
+      </div>
+      <div align="justify" width: 1200px>
+        <p class="figure">
+          <strong>Figure 1:</strong> We present MV2MV, a unified multi-view image to multi-view image translation framework, 
+          enabling various multi-view image translation tasks such as super-resolution (top row), text-driven editing (2nd and 3rd rows), 
+          etc. Our method achieves high-quality results with fine details while maintaining view consistency.
+        </p>
+      </div>
+
+      <!--------------------------------------------------------------------------------------------------->
+      <!--                                            Abstract                                          --->
+      <!--------------------------------------------------------------------------------------------------->
+
+      <br>
+      <hr><br>
+      <div align="justify" width: 1200px>
+
+        <h1>Abstract</h1>
+
+        <span style="font-size: 13pt">
+          <!--<ul>-->
+            Image translation has various applications in computer graphics and computer vision, aiming to 
+            transfer images from one domain to another. Thanks to the excellent generation capability of diffusion models, 
+            recent single-view image translation methods achieve realistic results. However, directly applying diffusion 
+            models for multi-view image translation remains challenging for two major obstacles: the need for paired training 
+            data and the limited view consistency. To overcome the obstacles, we present a first unified multi-view image to 
+            multi-view image translation framework based on diffusion models, called MV2MV. Firstly, we propose a novel 
+            self-supervised training strategy that exploits the success of off-the-shelf single-view image translators and 
+            the 3D Gaussian Splatting (3DGS) technique to generate pseudo ground truths as supervisory signals, leading to 
+            enhanced consistency and fine details. Additionally, we propose a latent multi-view consistency block, which 
+            utilizes the latent-3DGS as the underlying 3D representation to facilitate information exchange across multi-view 
+            images and inject 3D prior into the diffusion model to enforce consistency. Finally, our approach simultaneously 
+            optimizes the diffusion model and 3DGS to achieve a better trade-off between consistency and realism. Extensive 
+            experiments across various translation tasks demonstrate that MV2MV outperforms task-specific specialists in both 
+            quantitative and qualitative. 
+        </span>
+      </div>
+
+      <BR><BR>
+
+
+
+
+      <!--------------------------------------------------------------------------------------------------->
+      <!--                                            Download                                          --->
+      <!--------------------------------------------------------------------------------------------------->
+
+      <hr>
+
+      <div align="justify">
+
+        <h1>Download </h1>
+
+        <span style="font-size: 13pt; line-height:32px">
+          <a href="paper/mv2mv_finally.pdf">paper</a>(~2M) <BR>
+          code </a>(coming soon) <BR>
+          Slide </a>(coming soon) <BR>
+        </span>
+
+      </div>
+
+      <BR><BR>
+
+
+      <!-------------------------------------------- ------------------------------------------------------->
+      <!--                                             Video                                           --->
+      <!--------------------------------------------------------------------------------------------------->
+
+      <hr>
+
+      <h1>Method</h1>
+
+      <span style="font-size: 13pt">
+        <!--<ul>-->
+          We propose a unified multi-view image to multi-view image translation framework, called MV2MV, 
+          based on diffusion models for various multi-view image translation tasks such as super-resolution, 
+          denoising, deblurring and text-driven editing (see Fig. \ref{fig1}). Firstly, we introduce a novel 
+          self-supervised training strategy, called Consistent and Adversarial Supervision (CAS). Specifically, 
+          we first process multi-view images individually using off-the-shelf single-view image translators 
+          to obtain a set of high-quality outputs, and then feed them into 3D Gaussian Splatting (3DGS) to average 
+          out the inconsistencies and yield consistent outputs. These two outputs are regarded as pseudo ground 
+          truths serving as supervisory signals, and consistent loss and adversarial loss are introduced to 
+          effectively combine the advantages of the two pseudo ground truths to ensure both consistency and realism. 
+          Secondly, we propose a plug-in latent multi-view consistency block, named LAConsistNet, to construct our 
+          view-consistent diffusion model (VCDM). Specifically, the LAConsistNet block utilizes a latent-3DGS as the 
+          underlying 3D representation to ensure information exchange among multi-view images, thereby guaranteeing 
+          multi-view consistency. Finally, we introduce a joint optimization strategy by simultaneously training 
+          VCDM and 3DGS to ensure the consistency of the details derived from the adversarial loss, resulting in a 
+          better trade-off between consistency and realism. 
+      </span>
+
+
+      <div align="center"><img src="./images/fig2.jpg" width="880" alt="Figure 4"></div>
+      <p class="figure">
+        <strong>Figure 2:</strong> Overview of MV2MV. Given multi-view images (top left), 
+        we utilize the CAS strategy (right) to train the proposed VCDM (left), which exploits
+         the success of off-the-shelf single-view image translators and 3DGS to generate pseudo
+          ground truths as supervisory signals. LAConsistNet
+          utilizes a latent-3DGS as the underlying 3D representation to enable information exchange 
+          across multi-view images, ensuring 3D consistency. The joint optimization strategy 
+          simultaneously optimizes VCDM and 3DGS to achieve a better trade-off between consistency and realism.
+      </p>
+      <BR><BR>
+
+      <BR><BR><BR>
+
+      <!-- Video -->
+
+
+      <!-------------------------------------------- ------------------------------------------------------->
+      <!--                                             Talk                                           --->
+      <!--------------------------------------------------------------------------------------------------->
+
+      <hr>
+
+      <h1>Talk </h1>
+      <span style="font-size: 13pt">
+        The video will be uploaded after the conference.
+        <!--<ul>-->
+      </span>
+      </div>
+
+      <BR><BR><BR>
+
+
+      <!--------------------------------------------------------------------------------------------------->
+      <!--                                            Results                                           --->
+      <!--------------------------------------------------------------------------------------------------->
+
+      <hr>
+
+      <div align="justify">
+
+        <h1>Results </h1>
+
+        <BR>
+        <div align="center"><img src="./images/fig4.jpg" width="880" alt="Figure 2"></div>
+        <p class="figure">
+          <strong>Figure 2:</strong> Qualitative results on super-resolution. Our method is able to generate more
+           realistic and more sharper details.
+        </p>
+        <BR><BR>
+
+        <div align="center"><img src="./images/fig5.jpg" width="880" alt="Figure 3"></div>
+        <p class="figure">
+          <strong>Figure 3:</strong> Qualitative results on denoising. Our method effectively removes noise while restoring detailed texture.
+        </p>
+        <BR><BR>
+
+        <div align="center"><img src="./images/fig6.jpg" width="880" alt="Figure 4"></div>
+        <p class="figure">
+          <strong>Figure 4:</strong> Qualitative results on deblurring. Our method removes motion blur and generates detailed textures.
+        </p>
+        <BR><BR>
+
+        <div align="center"><img src="./images/fig7.jpg" width="880" alt="Figure 4"></div>
+        <p class="figure">
+          <strong>Figure 5:</strong> Qualitative results on text-driven editing. Our method generates results that are more consistent and of 
+          better quality than previous state-of-the-art methods.
+        </p>
+        <BR><BR>
+      </div>
+
+      <BR>
+
+
+      <!--------------------------------------------------------------------------------------------------->
+      <!--                                        Acknowledgments                                       --->
+      <!--------------------------------------------------------------------------------------------------->
+
+      <hr>
+
+      <div align="justify">
+
+        <h1>Acknowledgments </h1>
+
+        <p class="text">
+          <span style="font-size: 13pt; line-height:22px">
+            We would like to thank the anonymous reviewers for their constructive suggestions and comments. 
+            This work is supported by the National Key R&D Program of China (2022YFB3303400), 
+            the National Natural Science Foundationof China (62025207), and Laoshan Laboratory  (No.LSKJ202300305).
+          </span>
+        </p>
+      </div>
+
+      <BR><BR>
+
+
+
+      <!--------------------------------------------------------------------------------------------------->
+      <!--                                        Bibtex                                       --->
+      <!--------------------------------------------------------------------------------------------------->
+
+      <hr>
+
+      <div align="justify">
+
+        <h1>Bibtex</h1>
+        <table style="font-size: 13pt; line-height:30px" align="left">
+          <caption></caption>
+          <tr>
+            <td>@</td>
+            <td>article{</td>
+            <td></td>
+            <td> Cai2024MV2MV,</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>title</td>
+            <td>=</td>
+            <td> {MV2MV: Multi-View Image Translation via View-Consistent Diffusion Models},
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>author</td>
+            <td>=</td>
+            <td> {Youcheng Cai, Runshi Li, Ligang Liu},</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>journal</td>
+            <td>=</td>
+            <td> {ACM Transactions on Graphics (SIGGRAPH Asia 2024)},</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>volume</td>
+            <td>=</td>
+            <td> {43},</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>number</td>
+            <td>=</td>
+            <td> {6},</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>year</td>
+            <td>=</td>
+            <td> {2024}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <BR><BR><BR><BR>
+
+
+      <!----------------------------CopyRight---------------------------->
+
+    </blockquote>
+  </font>
+
+</html>
